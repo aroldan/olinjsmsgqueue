@@ -1,0 +1,7 @@
+{
+  "name": "Olin.js example",
+  "description": "An example of message queuing and how it's useful",
+  "repository": "https://git.hubteam.com/aroldan/olinjsmsgqueue",
+  "logo": "http://node-js-sample.herokuapp.com/node.svg",
+  "image": "heroku/nodejs"
+}
