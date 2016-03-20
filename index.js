@@ -18,7 +18,6 @@ app.get('/cool', function(req, res) {
   var coolFace = cool();
 
   res.send(coolFace);
-  });
 });
 
 app.listen(app.get('port'), function() {
