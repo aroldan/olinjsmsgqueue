@@ -1,6 +1,8 @@
 var express = require('express');
 var app = express();
 var cool = require('cool-ascii-faces');
+var multer = require("multer");
+var uploads = multer({dest: 'uploads/'});
 
 var redisClient;
 var NR = require("node-resque");
@@ -83,6 +85,12 @@ app.get('/cool', function(req, res) {
   });
 
   res.send(coolFace);
+});
+
+app.post('/file-upload', uploads.single('file'), function(request, response) {
+  console.info("Got file uploaded.");
+  console.info(request.file.path);
+  response.send("Cool");
 });
 
 app.listen(app.get('port'), function() {
