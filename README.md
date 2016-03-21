@@ -20,5 +20,9 @@ For local development, you can use either redis running on your machine locally,
 $ heroku config:get REDISTOGO_URL -s >> .env
 ```
 
-### Background
+### Steps
+
+Check out the project, and explore what comes out of the box. By default, we have a simple page served in the app root with an area to drop uploaded images into. When dropping an image into the area, it gets uploaded to the server and stashed in a temporary location (`uploads/(some random number)`).
+
+In the lab, we'll modify this to write the image path into a processing queue that'll thumbnail it and extract some metadata.
 
