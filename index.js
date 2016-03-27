@@ -27,7 +27,7 @@ var jobs = {
     }
   },
   "createthumbnails": {
-    perform: function(path, targetname, callback) {
+    perform: function(path, callback) {
       Jimp.read(path, function(err, image) {
         if (err) throw err;
 
@@ -77,7 +77,7 @@ worker.on('pause',           function(){ console.log("worker paused"); });
 
 scheduler.on('start',             function(){ console.log("scheduler started"); });
 scheduler.on('end',               function(){ console.log("scheduler ended"); });
-scheduler.on('poll',              function(){ console.log("scheduler polling"); });
+//scheduler.on('poll',              function(){ console.log("scheduler polling"); });
 scheduler.on('master',            function(state){ console.log("scheduler became master"); });
 scheduler.on('error',             function(error){ console.log("scheduler error >> " + error); });
 scheduler.on('working_timestamp', function(timestamp){ console.log("scheduler working timestamp " + timestamp); });
@@ -114,13 +114,13 @@ app.get('/cool', function(req, res) {
 });
 
 app.post('/file-upload', uploads.single('file'), function(request, response) {
-  console.info("Got file uploaded.");
+  console.info("Saw uploaded file:");
   console.info(request.file.path + " " + request.file.originalname);
 
   queue.connect(function() {
     queue.enqueue("images", "createthumbnails", [request.file.path, "imagename"])
   });
-  
+
   response.send("Cool");
 });
 
