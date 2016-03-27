@@ -5,9 +5,15 @@ var multer = require("multer");
 var util = require('util');
 var Jimp = require('jimp');
 var fs = require('fs');
+var mongoose = require('mongoose');
+
+var UploadedImage = require('./models/Image');
 
 // create uploads dir
 fs.existsSync("./public/uploads") || fs.mkdirSync("./public/uploads");
+
+// connect to DB
+mongoose.connect('mongodb://localhost/test');
 
 var redisClient;
 var NR = require("node-resque");
@@ -125,7 +131,7 @@ var uploads = multer({
     },
     filename: function(req, file, cb) {
       // save with extension of uploaded file
-      cb(null, file.fieldname + "-" + Date.now() + "." + file.originalname.split(".").slice(-1)[0])
+      cb(null, file.fieldname + "-" + Date.now() + "." + file.originalname.split(".").slice(-1)[0].toLowerCase())
     }
   })
 });
@@ -136,6 +142,16 @@ app.post('/file-upload', uploads.single('file'), function(request, response) {
 
   queue.connect(function() {
     queue.enqueue(QUEUE_NAME, "createthumbnails", [request.file.path, "imagename"])
+  });
+
+  var imgRecord = new UploadedImage({
+    original: request.file.path
+  });
+
+  imgRecord.save(function(err) {
+    if(err) {
+      console.error("Could not save image to db");
+    }
   });
 
   response.send({
