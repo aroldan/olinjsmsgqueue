@@ -80,11 +80,16 @@ app.get('/', function(request, response) {
 app.get('/cool', function(req, res) {
   var coolFace = cool();
 
+  var number1 = Math.round(Math.random() * 1000)
+  var number2 = Math.round(Math.random() * 1000)
+
   queue.connect(function() {
-    queue.enqueue("math", "add", [1, 2]);
+    queue.enqueue("math", "add", [number1, number2]);
   });
 
-  res.send(coolFace);
+  res.send(coolFace + "\n" +
+    "adding " + number1 + " and " + number2
+  );
 });
 
 app.post('/file-upload', uploads.single('file'), function(request, response) {
