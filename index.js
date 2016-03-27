@@ -4,6 +4,10 @@ var cool = require('cool-ascii-faces');
 var multer = require("multer");
 var util = require('util');
 var Jimp = require('jimp');
+var fs = require('fs');
+
+// create uploads dir
+fs.existsSync("./public/uploads") || fs.mkdirSync("./public/uploads");
 
 var redisClient;
 var NR = require("node-resque");
