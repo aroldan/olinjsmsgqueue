@@ -40,6 +40,12 @@ Before creating the task, upload an image to the basic page and look at the log 
 
 Now, let's create a new task that takes the path of the image on disk and saves resized versions to somewhere else.
 
+### Next Steps
+
+#### Save Image Information to a Database
+
+Right now, this doesn't put the image information anywhere -- it just writes the file to disk. If we wrote those to a database, what fields would we save? What parts would we write in the intial request, and what parts would we write in the queue consumer?
+
 #### Upload to S3 instead of heroku
 
-This will work locally, but when we deploy it 
+This will work locally, but when we deploy it to heroku, the files we write to the ephemeral filesystem on the dyno won't last past the next restart.
