@@ -40,3 +40,6 @@ Before creating the task, upload an image to the basic page and look at the log 
 
 Now, let's create a new task that takes the path of the image on disk and saves resized versions to somewhere else.
 
+#### Upload to S3 instead of heroku
+
+This will work locally, but when we deploy it 

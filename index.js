@@ -2,12 +2,13 @@ var express = require('express');
 var app = express();
 var cool = require('cool-ascii-faces');
 var multer = require("multer");
-var uploads = multer({dest: 'uploads/'});
 var util = require('util');
 var Jimp = require('jimp');
 
 var redisClient;
 var NR = require("node-resque");
+
+var QUEUE_NAME = "images" + process.pid; // make unique enough so deployed worker won't conflict
 
 if (process.env.REDISTOGO_URL) {
   var rtg   = require("url").parse(process.env.REDISTOGO_URL);
@@ -53,7 +54,7 @@ scheduler.connect(function(){
 });
 
 
-var worker = new NR.worker({ connection: resqueConnectionDetails, queues: 'images'}, jobs);
+var worker = new NR.worker({ connection: resqueConnectionDetails, queues: QUEUE_NAME}, jobs);
 worker.connect(function() {
   worker.workerCleanup();
   worker.start();
@@ -105,7 +106,7 @@ app.get('/cool', function(req, res) {
   var number2 = Math.round(Math.random() * 1000)
 
   queue.connect(function() {
-    queue.enqueue("images", "add", [number1, number2]);
+    queue.enqueue(QUEUE_NAME, "add", [number1, number2]);
   });
 
   res.send(coolFace + "\n" +
@@ -113,15 +114,29 @@ app.get('/cool', function(req, res) {
   );
 });
 
+var uploads = multer({
+  storage: multer.diskStorage({
+    destination: function(req, file, cb) {
+      cb(null, "./public/uploads");
+    },
+    filename: function(req, file, cb) {
+      // save with extension of uploaded file
+      cb(null, file.fieldname + "-" + Date.now() + "." + file.originalname.split(".").slice(-1)[0])
+    }
+  })
+});
+
 app.post('/file-upload', uploads.single('file'), function(request, response) {
   console.info("Saw uploaded file:");
   console.info(request.file.path + " " + request.file.originalname);
 
   queue.connect(function() {
-    queue.enqueue("images", "createthumbnails", [request.file.path, "imagename"])
+    queue.enqueue(QUEUE_NAME, "createthumbnails", [request.file.path, "imagename"])
   });
 
-  response.send("Cool");
+  response.send({
+    location: request.file.path.split("/").slice(1).join("/")
+  });
 });
 
 app.listen(app.get('port'), function() {
