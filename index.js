@@ -3,6 +3,8 @@ var app = express();
 var cool = require('cool-ascii-faces');
 var multer = require("multer");
 var uploads = multer({dest: 'uploads/'});
+var util = require('util');
+var Jimp = require('jimp');
 
 var redisClient;
 var NR = require("node-resque");
@@ -23,6 +25,25 @@ var jobs = {
       var answer = a + b;
       callback(null, answer);
     }
+  },
+  "createthumbnails": {
+    perform: function(path, targetname, callback) {
+      Jimp.read(path, function(err, image) {
+        if (err) throw err;
+
+        var resizeCompleteCallback = function() {
+          console.info("Completed resizing photo")
+        }
+
+        image.resize(640, Jimp.AUTO)
+          .quality(80)
+          .write(path + "-640.jpg", resizeCompleteCallback)
+
+        image.resize(320, Jimp.AUTO)
+          .quality(80)
+          .write(path + "-320.jpg", resizeCompleteCallback)
+      });
+    }
   }
 };
 
@@ -32,7 +53,7 @@ scheduler.connect(function(){
 });
 
 
-var worker = new NR.worker({ connection: resqueConnectionDetails, queues: 'math'}, jobs);
+var worker = new NR.worker({ connection: resqueConnectionDetails, queues: 'images'}, jobs);
 worker.connect(function() {
   worker.workerCleanup();
   worker.start();
@@ -84,7 +105,7 @@ app.get('/cool', function(req, res) {
   var number2 = Math.round(Math.random() * 1000)
 
   queue.connect(function() {
-    queue.enqueue("math", "add", [number1, number2]);
+    queue.enqueue("images", "add", [number1, number2]);
   });
 
   res.send(coolFace + "\n" +
@@ -94,7 +115,12 @@ app.get('/cool', function(req, res) {
 
 app.post('/file-upload', uploads.single('file'), function(request, response) {
   console.info("Got file uploaded.");
-  console.info(request.file.path);
+  console.info(request.file.path + " " + request.file.originalname);
+
+  queue.connect(function() {
+    queue.enqueue("images", "createthumbnails", [request.file.path, "imagename"])
+  });
+  
   response.send("Cool");
 });
 
