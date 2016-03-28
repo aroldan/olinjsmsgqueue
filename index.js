@@ -5,15 +5,9 @@ var multer = require("multer");
 var util = require('util');
 var Jimp = require('jimp');
 var fs = require('fs');
-var mongoose = require('mongoose');
-
-var UploadedImage = require('./models/Image');
 
 // create uploads dir
 fs.existsSync("./public/uploads") || fs.mkdirSync("./public/uploads");
-
-// connect to DB
-mongoose.connect('mongodb://localhost/test');
 
 var redisClient;
 var NR = require("node-resque");
@@ -35,25 +29,6 @@ var jobs = {
     perform: function(a, b, callback) {
       var answer = a + b;
       callback(null, answer);
-    }
-  },
-  "createthumbnails": {
-    perform: function(path, callback) {
-      Jimp.read(path, function(err, image) {
-        if (err) throw err;
-
-        var resizeCompleteCallback = function() {
-          console.info("Completed resizing photo")
-        }
-
-        image.resize(640, Jimp.AUTO)
-          .quality(80)
-          .write(path + "-640.jpg", resizeCompleteCallback)
-
-        image.resize(320, Jimp.AUTO)
-          .quality(80)
-          .write(path + "-320.jpg", resizeCompleteCallback)
-      });
     }
   }
 };
@@ -140,22 +115,8 @@ app.post('/file-upload', uploads.single('file'), function(request, response) {
   console.info("Saw uploaded file:");
   console.info(request.file.path + " " + request.file.originalname);
 
-  queue.connect(function() {
-    queue.enqueue(QUEUE_NAME, "createthumbnails", [request.file.path, "imagename"])
-  });
-
-  var imgRecord = new UploadedImage({
-    original: request.file.path
-  });
-
-  imgRecord.save(function(err) {
-    if(err) {
-      console.error("Could not save image to db");
-    }
-  });
-
   response.send({
-    location: request.file.path.split("/").slice(1).join("/")
+    status: "OK"
   });
 });
 
