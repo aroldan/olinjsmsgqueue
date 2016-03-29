@@ -6,7 +6,15 @@ Getting going with this lab assumes you've already gotten something working on H
 
 ### Setup
 
-To complete this lab, you'll need to add a Redis add-on to your Heroku deployment. I suggest [redistogo](https://devcenter.heroku.com/articles/redistogo) since they have a decent free tier.
+In order to complete this lab, you'll have to install Redis, a fast, persistent key-value store.
+
+#### Locally
+
+To get things rolling locally on Ubuntu, you can follow [the instructions here](https://www.digitalocean.com/community/tutorials/how-to-configure-a-redis-cluster-on-ubuntu-14-04).
+
+#### Deploying
+
+In order to deploy this lab, you'll need to add a Redis add-on to your Heroku deployment. I suggest [redistogo](https://devcenter.heroku.com/articles/redistogo) since they have a decent free tier.
 
 To add in the add-on, run:
 
