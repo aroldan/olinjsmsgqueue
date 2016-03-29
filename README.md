@@ -10,7 +10,17 @@ In order to complete this lab, you'll have to install Redis, a fast, persistent 
 
 #### Locally
 
-To get things rolling locally on Ubuntu, you can follow [the instructions here](https://www.digitalocean.com/community/tutorials/how-to-configure-a-redis-cluster-on-ubuntu-14-04).
+To get things rolling locally on Ubuntu, you can follow these instructions:
+
+Run the following command to update our packages:
+
+```
+sudo apt-get update
+```
+Install the Redis server:
+```
+sudo apt-get install redis-server
+```
 
 #### Deploying
 
