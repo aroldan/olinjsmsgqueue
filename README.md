@@ -22,6 +22,13 @@ Install the Redis server:
 sudo apt-get install redis-server
 ```
 
+Verify redis is installed and running by running the redis command line client:
+```
+redis-cli info server
+```
+
+If you see a bunch of output, you're good to go.
+
 #### Deploying
 
 In order to deploy this lab, you'll need to add a Redis add-on to your Heroku deployment. I suggest [redistogo](https://devcenter.heroku.com/articles/redistogo) since they have a decent free tier.
